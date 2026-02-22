@@ -236,7 +236,7 @@ export default function ChatPage() {
           <BotMessageSquare size={24} style={{ color: "#a78bfa", marginRight: "8px" }} />
           <h1 style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
             AIチューターカガワさん
-            <span style={{ fontSize: "0.75rem", color: "var(--text-muted)", fontWeight: "normal" }}>V1.0.1</span>
+            <span style={{ fontSize: "0.75rem", color: "var(--text-muted)", fontWeight: "normal" }}>v1.1.0</span>
           </h1>
         </div>
 
