@@ -9,6 +9,7 @@ export default function ChatPage() {
   const [input, setInput] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [chatMode, setChatMode] = useState<"hint" | "direct">("hint");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -187,7 +188,7 @@ export default function ChatPage() {
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: userMsg.text, image: userMsg.image, history }),
+        body: JSON.stringify({ message: userMsg.text, image: userMsg.image, history, mode: chatMode }),
       });
 
       if (!response.ok) {
@@ -329,14 +330,26 @@ export default function ChatPage() {
             rows={1}
           />
 
-          <button
-            className="action-btn send-btn"
-            onClick={handleSubmit}
-            disabled={(!input.trim() && !imagePreview) || isLoading}
-            aria-label="送信"
-          >
-            <Send size={18} />
-          </button>
+          <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
+            <select
+              value={chatMode}
+              onChange={(e) => setChatMode(e.target.value as "hint" | "direct")}
+              className="mode-select"
+              disabled={isLoading}
+              title="回答モードの切り替え"
+            >
+              <option value="hint">💡 ヒント</option>
+              <option value="direct">⚡️ すぐ答え</option>
+            </select>
+            <button
+              className="action-btn send-btn"
+              onClick={handleSubmit}
+              disabled={(!input.trim() && !imagePreview) || isLoading}
+              aria-label="送信"
+            >
+              <Send size={18} />
+            </button>
+          </div>
         </div>
       </div>
     </div>
