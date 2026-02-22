@@ -9,7 +9,7 @@ export default function ChatPage() {
   const [input, setInput] = useState("");
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [chatMode, setChatMode] = useState<"hint" | "direct">("hint");
+  const [chatMode, setChatMode] = useState<"hint" | "direct">("direct");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const chatContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
