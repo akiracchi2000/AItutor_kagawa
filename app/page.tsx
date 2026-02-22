@@ -27,17 +27,60 @@ export default function ChatPage() {
       return;
     }
 
-    // Check size limit (e.g. 5MB)
-    if (file.size > 5 * 1024 * 1024) {
-      alert("ファイルサイズが大きすぎます（5MB以下のファイルを選択してください）。");
+    // Check size limit (e.g. 20MB)
+    if (file.size > 20 * 1024 * 1024) {
+      alert("ファイルサイズが大きすぎます（20MB以下のファイルを選択してください）。");
       return;
     }
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setImagePreview(reader.result as string);
-    };
-    reader.readAsDataURL(file);
+    if (file.type.startsWith("image/")) {
+      // 画像の場合はクライアント側で圧縮・リサイズを行う（Vercelの4.5MB制限対策）
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const img = new window.Image();
+        img.onload = () => {
+          const MAX_WIDTH = 1920;
+          const MAX_HEIGHT = 1920;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > height) {
+            if (width > MAX_WIDTH) {
+              height = Math.round((height *= MAX_WIDTH / width));
+              width = MAX_WIDTH;
+            }
+          } else {
+            if (height > MAX_HEIGHT) {
+              width = Math.round((width *= MAX_HEIGHT / height));
+              height = MAX_HEIGHT;
+            }
+          }
+
+          const canvas = document.createElement("canvas");
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext("2d");
+
+          if (ctx) {
+            ctx.drawImage(img, 0, 0, width, height);
+            // 軽量なJPEG形式に変換しデータ量を抑える
+            const compressedDataUrl = canvas.toDataURL("image/jpeg", 0.8);
+            setImagePreview(compressedDataUrl);
+          } else {
+            setImagePreview(reader.result as string);
+          }
+        };
+        img.src = reader.result as string;
+      };
+      reader.readAsDataURL(file);
+    } else {
+      // PDF等の場合はそのまま読み込む
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
 
     // reset input
     if (fileInputRef.current) {
@@ -190,7 +233,10 @@ export default function ChatPage() {
       <header className="header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
         <div style={{ display: "flex", alignItems: "center" }}>
           <BotMessageSquare size={24} style={{ color: "#a78bfa", marginRight: "8px" }} />
-          <h1>AIチューターカガワさん</h1>
+          <h1 style={{ display: "flex", alignItems: "baseline", gap: "8px" }}>
+            AIチューターカガワさん
+            <span style={{ fontSize: "0.75rem", color: "var(--text-muted)", fontWeight: "normal" }}>V1.0.1</span>
+          </h1>
         </div>
 
         {messages.length > 0 && (
