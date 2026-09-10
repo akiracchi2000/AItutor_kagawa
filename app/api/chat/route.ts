@@ -28,9 +28,9 @@ export async function POST(req: Request) {
 
         const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-        // Attempt to use gemini-3.1-pro-preview, fallback to gemini-2.5-pro if unavailable/fails
-        const modelName = "gemini-3.1-pro-preview";
-        const fallbackModelName = "gemini-2.5-pro";
+        // Attempt to use gemini-3.7-flash, fallback to gemini-2.5-flash if unavailable/fails
+        const modelName = "gemini-3.7-flash";
+        const fallbackModelName = "gemini-2.5-flash";
 
         const currentSystemPrompt = mode === "direct" ? SYSTEM_PROMPT_DIRECT : SYSTEM_PROMPT_HINT;
 
